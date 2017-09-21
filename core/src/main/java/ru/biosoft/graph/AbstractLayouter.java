@@ -49,7 +49,7 @@ public abstract class AbstractLayouter implements Layouter
         else
             sl.doLayout(this, graph, lJC);
 
-        log.log(Level.INFO, "Layout time " + ( System.currentTimeMillis() - time ));
+        log.log(Level.FINE, "Layout time " + ( System.currentTimeMillis() - time ));
     }
 
     abstract void layoutNodes(Graph graph, LayoutJobControl lJC);

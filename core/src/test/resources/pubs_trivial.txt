@@ -1,0 +1,35 @@
+N: authors, 300, 200
+N: discounts, 300, 200
+N: employee, 300, 200
+N: jobs, 300, 200
+N: relation_7, 300, 200
+N: pub_info, 300, 200
+N: publishers, 300, 200
+N: relation_4, 300, 200
+N: relation_8, 300, 200
+N: relation_10, 300, 200
+N: roysched, 300, 200
+N: sales, 300, 200
+A: sales, pf=diamond
+N: stores, 300, 200
+N: relation_15, 300, 200
+N: titleauthor, 300, 200
+A: titleauthor, pf=diamond
+N: titles, 300, 200
+N: relation_11, 300, 200
+E: authors, titleauthor
+E: jobs, relation_7
+E: relation_7, employee
+E: publishers, relation_4
+E: relation_4, employee
+E: publishers, relation_8
+E: relation_8, pub_info
+E: publishers, relation_10
+E: relation_10, titles
+E: stores, relation_15
+E: relation_15, discounts
+E: stores, sales
+E: titles, relation_11
+E: relation_11, roysched
+E: titles, sales
+E: titles, titleauthor

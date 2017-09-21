@@ -1,0 +1,83 @@
+N: a, 300, 200
+N: b, 300, 200
+N: c, 300, 200
+N: d, 300, 200
+N: e, 300, 200
+N: f, 300, 200
+N: g, 300, 200
+N: h, 300, 200
+N: i, 300, 200
+N: j, 300, 200
+N: k, 300, 200
+N: l, 300, 200
+N: m, 300, 200
+N: n, 300, 200
+N: relation_1, 300, 200
+N: relation_2, 300, 200
+N: relation_3, 300, 200
+N: relation_4, 300, 200
+N: relation_5, 300, 200
+N: relation_6, 300, 200
+N: relation_7, 300, 200
+N: relation_8, 300, 200
+N: relation_9, 300, 200
+N: relation_10, 300, 200
+N: relation_11, 300, 200
+N: relation_12, 300, 200
+N: relation_13, 300, 200
+N: relation_14, 300, 200
+N: relation_15, 300, 200
+N: relation_16, 300, 200
+N: relation_17, 300, 200
+N: relation_18, 300, 200
+N: relation_19, 300, 200
+N: relation_20, 300, 200
+N: relation_21, 300, 200
+N: relation_22, 300, 200
+N: relation_23, 300, 200
+E: d, relation_1
+E: relation_1, h
+E: h, relation_2
+E: relation_2, a
+E: a, relation_3
+E: relation_3, e
+E: d, relation_4
+E: relation_4, g
+E: d, relation_5
+E: relation_5, j
+E: e, relation_6
+E: relation_6, i
+E: b, relation_7
+E: relation_7, l
+E: h, relation_8
+E: relation_8, m
+E: i, relation_9
+E: relation_9, m
+E: i, relation_10
+E: relation_10, j
+E: e, relation_11
+E: relation_11, n
+E: m, relation_12
+E: relation_12, k
+E: m, relation_13
+E: relation_13, j
+E: k, relation_14
+E: relation_14, j
+E: c, relation_15
+E: relation_15, n
+E: k, relation_16
+E: relation_16, g
+E: g, relation_17
+E: relation_17, h
+E: f, relation_18
+E: relation_18, j
+E: e, relation_19
+E: relation_19, c
+E: b, relation_20
+E: relation_20, g
+E: b, relation_21
+E: relation_21, j
+E: a, relation_22
+E: relation_22, j
+E: e, relation_23
+E: relation_23, b

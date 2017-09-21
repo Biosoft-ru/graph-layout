@@ -1,0 +1,42 @@
+N: Categories, 300, 200
+N: relation_1, 300, 200
+N: CustomerCustomerDemo, 450, 200
+N: CustomerDemographics, 450, 200
+A: CustomerDemographics, pf=diamond
+N: Customers, 300, 200
+N: relation_8, 300, 200
+N: Employees, 300, 200
+N: relation_10, 300, 200
+N: relation_15, 300, 200
+N: EmployeeTerritories, 400, 200
+A: EmployeeTerritories, pf=diamond
+N: OrderDetails, 350, 200
+N: Orders, 300, 200
+N: Products, 300, 200
+N: Region, 300, 200
+N: relation_14, 300, 200
+N: Shippers, 300, 200
+N: relation_17, 300, 200
+N: Suppliers, 300, 200
+N: relation_19, 300, 200
+N: Territories, 300, 200
+E: Categories, relation_1
+E: relation_1, Products
+E: CustomerDemographics, CustomerCustomerDemo
+E: Customers, CustomerCustomerDemo
+E: Customers, relation_8
+E: relation_8, Orders
+E: Employees, relation_10
+E: relation_10, Employees
+E: Employees, EmployeeTerritories
+E: Employees, relation_15
+E: relation_15, Orders
+E: Orders, OrderDetails
+E: Products, OrderDetails
+E: Region, relation_14
+E: relation_14, Territories
+E: Shippers, relation_17
+E: relation_17, Orders
+E: Suppliers, relation_19
+E: relation_19, Products
+E: Territories, EmployeeTerritories

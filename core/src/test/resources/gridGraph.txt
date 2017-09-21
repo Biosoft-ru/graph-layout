@@ -1,0 +1,48 @@
+N: C1, 0, 0
+A: C1, isCompartment=true
+N: C1_1, 0, 0
+A: C1_1, isCompartment=true
+A: C1_1, compartmentName=C1
+N: C2, 0, 0
+A: C2, isCompartment=true
+N: C3, 0, 0
+A: C3, isCompartment=true
+N: n1, 40, 30
+A: n1, compartmentName=C1
+N: n2, 40, 30
+A: n2, compartmentName=C1
+N: n3, 40, 30
+A: n3, compartmentName=C1
+N: n4, 40, 30
+A: n4, compartmentName=C1
+N: n5, 40, 30
+A: n5, compartmentName=C1
+N: n6, 40, 30
+A: n6, compartmentName=C1.C1_1
+N: n7, 40, 30
+A: n7, compartmentName=C1.C1_1
+N: n8, 40, 30
+A: n8, compartmentName=C1.C1_1
+N: n9, 40, 30
+A: n9, compartmentName=C2
+N: n10, 40, 30
+A: n10, compartmentName=C2
+N: n11, 40, 30
+A: n11, compartmentName=C2
+N: n12, 40, 30
+A: n12, compartmentName=C3
+N: n13, 40, 30
+A: n13, compartmentName=C3
+E: n1, n2
+E: n1, n3
+E: n1, n4
+E: n1, n6
+E: n4, n7
+E: n4, n5
+E: n4, n13
+E: n5, n9
+E: n7, n8
+E: n8, n9
+E: n9, n10
+E: n9, n11
+E: n12, n13
