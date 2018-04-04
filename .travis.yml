@@ -1,0 +1,15 @@
+language: java
+before_install:
+  - git clone https://github.com/Biosoft-ru/jobcontrol.git
+    && cd jobcontrol
+    && mvn install -DskipTests=true -Dmaven.javadoc.skip=true
+    && cd ../
+install:
+  - mvn test-compile -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+jdk:
+  - oraclejdk8
+cache:
+  directories:
+  - $HOME/.m2
+notifications:
+  email: false
