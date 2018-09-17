@@ -107,7 +107,7 @@ public class ForceDirectedLayouter extends AbstractLayouter
         }
 
         Util.adjustOrientations(graph);
-        
+
         // clear edges as they can affect getBounds(). They will be layouted later during layoutEdges stage
         for( Edge edge : graph.getEdges() )
         	if(!edge.fixed)
@@ -308,7 +308,7 @@ public class ForceDirectedLayouter extends AbstractLayouter
 
             int degree = 5;
             List<Edge> edges_ = graph.getEdges(node);
-            if( edges_ != null )
+            if( !edges_.isEmpty() )
                 degree = edges_.size();
 
             float fg = gravity * ( 1 + degree ) * l;

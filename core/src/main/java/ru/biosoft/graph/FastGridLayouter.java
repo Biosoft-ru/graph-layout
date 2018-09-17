@@ -430,7 +430,7 @@ public class FastGridLayouter extends AbstractLayouter
             }
             return dMin;
         }
-        
+
         //Calculating cost
         private int getCost()
         {
@@ -1005,7 +1005,7 @@ public class FastGridLayouter extends AbstractLayouter
         Set<Node> lonelyNodes = new HashSet<>();
         for( Node node : graph.nodeList )
         {
-            if( graph.getEdges(node) == null )
+            if( graph.getEdges( node ).isEmpty() )
             {
                 lonelyNodes.add(node);
             }

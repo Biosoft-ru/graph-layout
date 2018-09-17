@@ -37,7 +37,7 @@ public class PathwayLayouter extends AbstractLayouter
         for( Node node : graph.nodeList )
         {
             String type = node.getAttribute("Type");
-            if( graph.getEdges(node) == null && type != null)
+            if( graph.getEdges( node ).isEmpty() && type != null )
             {
                 if( type.equals("Event") )
                 {
