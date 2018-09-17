@@ -414,7 +414,7 @@ public class Path extends Polygon
 
     /**
      * Returns angle for the last segment.
-     * 
+     *
      * Might be useful for arrow drawing.
      */
     public double getLastSegmentAngle()
@@ -528,10 +528,14 @@ public class Path extends Polygon
     public Path clone()
     {
         Path clone = new Path();
-        clone.xpoints = this.xpoints;
-        clone.ypoints = this.ypoints;
+        clone.xpoints = new int[npoints];
+        System.arraycopy( this.xpoints, 0, clone.xpoints, 0, npoints );
+        clone.ypoints = new int[npoints];
+        System.arraycopy( this.ypoints, 0, clone.ypoints, 0, npoints );
         clone.npoints = this.npoints;
-        clone.pointTypes = this.pointTypes == null ? new int[npoints] : this.pointTypes;
+        clone.pointTypes = new int[npoints];
+        if( this.pointTypes != null )
+            System.arraycopy( this.pointTypes, 0, clone.pointTypes, 0, npoints );
         return clone;
     }
 }
