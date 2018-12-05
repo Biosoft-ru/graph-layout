@@ -102,7 +102,17 @@ public class GreedyLayouter extends AbstractLayouter
         // other - as unprocessed
         for( Node node : graph.nodeList )
             if( node.fixed )
+            {
+                if( node.data == null )
+                {
+                    LayoutData ld = new LayoutData();
+                    ld.fixed = true;
+                    ld.processed = true;
+                    ld.weight = processedWeight;
+                    node.data = ld;
+                }
                 processedNodes.add(node);
+            }
             else
                 unprocessedNodes.add(node);
 
@@ -192,7 +202,7 @@ public class GreedyLayouter extends AbstractLayouter
             }
             processNode(graph, node);
         }
-        
+
         Util.adjustOrientations(graph);
     }
 
