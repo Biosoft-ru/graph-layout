@@ -345,6 +345,20 @@ public class Graph implements Cloneable
     }
 
     /**
+     * Moves all graph nodes such that bounding rectangle (rectangle
+     * that bounds all graph nodes) origin will be located in the specified
+     * coordinates. Ignores fixed node positions.
+     *
+     * @param x - bounding rectangle x coordinate.
+     * @param y - bounding rectangle y coordinate.
+     */
+    public void setLocationForced(int x, int y)
+    {
+        Rectangle rect = getBounds();
+        move( x - rect.x, y - rect.y, false );
+    }
+
+    /**
      * Moves all graph nodes on the specified distance.
      *
      * @param dx - shift by x axis.
@@ -352,9 +366,14 @@ public class Graph implements Cloneable
      */
     public void move(int dx, int dy)
     {
+        move( dx, dy, true );
+    }
+
+    public void move(int dx, int dy, boolean supportFixed)
+    {
         for( Node node : nodeList )
         {
-            if( node.fixed )
+            if( supportFixed && node.fixed )
                 continue;
 
             node.x += dx;
@@ -363,7 +382,7 @@ public class Graph implements Cloneable
 
         for ( Edge e : edgeList )
         {
-            if( e.fixed )
+            if( supportFixed && e.fixed )
                 continue;
 
         	Path path = e.path;
