@@ -183,6 +183,16 @@ public class GreedyLayouter extends AbstractLayouter
             unprocessedNodes.remove(center);
             processedNodes.add(center);
         }
+        else
+        {
+            //select first central node as at intermediate step of layout
+            Node firstCenter = selectNextCenter( graph );
+            if( firstCenter != null )
+            {
+                center = firstCenter;
+                processNode( graph, firstCenter );
+            }
+        }
 
         // process other nodes
         while( unprocessedNodes.size() > 0 )
@@ -270,7 +280,14 @@ public class GreedyLayouter extends AbstractLayouter
         if( bestNode != null )
             return bestNode;
 
+        center = selectNextCenter( graph );
+        return center;
+    }
+
+    protected Node selectNextCenter(Graph graph)
+    {
         int weight;
+        Node bestNode = null;
         for( Node node : processedNodes )
         {
             Node u = selectNode(graph, node);
@@ -281,8 +298,6 @@ public class GreedyLayouter extends AbstractLayouter
                     bestNode = u;
             }
         }
-
-        center = bestNode;
         return bestNode;
     }
 
