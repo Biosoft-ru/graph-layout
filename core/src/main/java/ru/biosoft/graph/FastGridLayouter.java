@@ -28,6 +28,7 @@ public class FastGridLayouter extends AbstractLayouter
 
     private boolean isStartingFromThisLayout = false;
     private boolean isEstimationDone = false;
+    private boolean isScaled = false;
 
     //Grid parameters
     private int h; // Height of the grid
@@ -35,6 +36,8 @@ public class FastGridLayouter extends AbstractLayouter
     private final int sd = 6; // Saturation distance
     private int gridX = 70;//horizontal step for grid
     private int gridY = 60;//vertical step for grid
+
+    private Map<String, Node> fixedNodes = null; //to restore exact size and positions
 
     //Weights for crosses
     private int edgeEdgeCrossCost = 300;//Penalty for edge-edge crossing
@@ -71,16 +74,15 @@ public class FastGridLayouter extends AbstractLayouter
 
         layoutNodes(graph, jobControl);
         layoutEdges(graph, jobControl);
+
+        isEstimationDone = false;
     }
 
     @Override
 	public void layoutNodes(Graph graph, LayoutJobControl jobControl)
     {
-        for( Node node : graph.nodeList )
-        {
-            if( !Util.isCompartment(node) )
-                store(node);
-        }
+        if( !isScaled )
+            storeNodes( graph );
         setAllowedPoints(graph);
         distributedAnnealing(graph, jobControl);
         restore(graph);
@@ -1206,24 +1208,60 @@ public class FastGridLayouter extends AbstractLayouter
         }
     }
 
+    private void copyFixedNodes(Graph graph)
+    {
+        fixedNodes = new HashMap<>();
+        for( Node node : graph.nodeList )
+        {
+            if( node.fixed )
+                fixedNodes.put( node.name, node.clone() );
+        }
+    }
+
+    private void storeNodes(Graph graph)
+    {
+        for( Node node : graph.nodeList )
+        {
+            if( !Util.isCompartment( node ) )
+                store( node );
+        }
+        isScaled = true;
+    }
+
     private void restore(Graph graph)
     {
         for( Node node : graph.nodeList )
         {
             restore(node);
         }
+        isScaled = false;
     }
 
     private void store(Node node)
     {
+        int oldX = node.x, oldY = node.y;
         node.x = (int)Math.ceil( ( node.x + node.width / 2.0 ) / gridX);
         node.y = (int)Math.ceil( ( node.y + node.height / 2.0 ) / gridY);
+        if( node.fixed )
+        {
+            node.width = 2 * ( ( node.x + 1 ) * gridX - oldX );
+            node.height = 2 * ( ( node.y + 1 ) * gridY - oldY );
+        }
     }
 
     private void restore(Node node)
     {
         node.x = ( node.x + 1 ) * gridX - node.width / 2;
         node.y = ( node.y + 1 ) * gridY - node.height / 2;
+        if( node.fixed )
+        {
+            Node originalNode = fixedNodes.get( node.getName() );
+            if( originalNode != null )
+            {
+                node.width = originalNode.width;
+                node.height = originalNode.height;
+            }
+        }
     }
 
 
@@ -1395,6 +1433,8 @@ public class FastGridLayouter extends AbstractLayouter
         initNodeInteractionMap(graph);
         layoutCompartments(graph);
         setAllowedPoints(graph);
+        copyFixedNodes( graph );
+        storeNodes( graph );
         tMax = ( isStartingFromThisLayout() ) ? new Layouting(graph).getCost() : calulateMaximumTemperature(graph);
         double steps = Math.log(tMin / tMax);
         steps /= Math.log(cool);
