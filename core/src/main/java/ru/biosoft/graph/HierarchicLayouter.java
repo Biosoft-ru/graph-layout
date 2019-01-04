@@ -2738,6 +2738,8 @@ public class HierarchicLayouter extends AbstractLayouter
             }
         }
 
+        if( maxLevel == -1 )
+            return;
         // Make and initialize levels.
         levelNodes = new ArrayList<>( maxLevel );
         for( int j = 0; j < maxLevel; j++ )

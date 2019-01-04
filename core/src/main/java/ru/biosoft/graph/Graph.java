@@ -3,6 +3,7 @@ package ru.biosoft.graph;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -136,13 +137,15 @@ public class Graph implements Cloneable
     }
 
     /**
-     * Returns list of edges for the specified node.
+     * Returns unmodifieble list of edges for the specified node or empty list if node has no edges
      *
      * Note: the list contains only master edges.
      */
     public List<Edge> getEdges(Node node)
     {
-        return edgeMap.get( node );
+        if( !edgeMap.containsKey( node ) )
+            return Collections.emptyList();
+        return Collections.unmodifiableList( edgeMap.get( node ) );
     }
 
     /**
@@ -177,7 +180,7 @@ public class Graph implements Cloneable
         List<Edge> edges = getEdges( from );
         if( edges == null )
             return null;
-        
+
         for( Edge edge : edges )
         {
             // reverse edge is parallel to original too
@@ -197,7 +200,7 @@ public class Graph implements Cloneable
      * @param from - edge start node.
      * @param to - edge end node.
      * @param undirected if true edge starting with to and ending at from may be returned as well
-     * 
+     *
      * @return edge connecting the specified nodes.
      */
     public Edge getEdge(Node from, Node to, boolean undirected)
@@ -205,17 +208,17 @@ public class Graph implements Cloneable
     	if(!undirected)
     		return getEdge(from, to);
         List<Edge> edges = getEdges( from );
-       
+
         if( edges == null )
             return null;
-        
+
         for( Edge edge : edges )
         {
             // reverse edge is parallel to original too
             if( ( edge.from == from && edge.to == to ) || ( edge.from == to && edge.to == from ) )
                 return edge;
         }
-        
+
         return null;
     }
 
@@ -238,8 +241,7 @@ public class Graph implements Cloneable
         if( getNode( node.getName() ) == null )
             return;
 
-        List<Edge> edges = getEdges( node );
-
+        List<Edge> edges = edgeMap.get( node );
         if( edges != null )
         {
             while( edges.size() > 0 )
@@ -264,8 +266,8 @@ public class Graph implements Cloneable
     public void removeEdge(Edge edge)
     {
         // remove edge from node map
-        getEdges( edge.from ).remove( edge );
-        getEdges( edge.to ).remove( edge );
+        edgeMap.get( edge.from ).remove( edge );
+        edgeMap.get( edge.to ).remove( edge );
         edgeList.remove( edge );
 
         if( !edge.master )
@@ -280,8 +282,8 @@ public class Graph implements Cloneable
             master.slaves = edge.slaves;
             master.slaves.remove( master );
 
-            getEdges( edge.from ).add( master );
-            getEdges( edge.to ).add( master );
+            edgeMap.get( edge.from ).add( master );
+            edgeMap.get( edge.to ).add( master );
         }
 
         edge.master = true;
@@ -343,6 +345,20 @@ public class Graph implements Cloneable
     }
 
     /**
+     * Moves all graph nodes such that bounding rectangle (rectangle
+     * that bounds all graph nodes) origin will be located in the specified
+     * coordinates. Ignores fixed node positions.
+     *
+     * @param x - bounding rectangle x coordinate.
+     * @param y - bounding rectangle y coordinate.
+     */
+    public void setLocationForced(int x, int y)
+    {
+        Rectangle rect = getBounds();
+        move( x - rect.x, y - rect.y, false );
+    }
+
+    /**
      * Moves all graph nodes on the specified distance.
      *
      * @param dx - shift by x axis.
@@ -350,9 +366,14 @@ public class Graph implements Cloneable
      */
     public void move(int dx, int dy)
     {
+        move( dx, dy, true );
+    }
+
+    public void move(int dx, int dy, boolean supportFixed)
+    {
         for( Node node : nodeList )
         {
-            if( node.fixed )
+            if( supportFixed && node.fixed )
                 continue;
 
             node.x += dx;
@@ -361,6 +382,9 @@ public class Graph implements Cloneable
 
         for ( Edge e : edgeList )
         {
+            if( supportFixed && e.fixed )
+                continue;
+
         	Path path = e.path;
         	if ( path != null )
                  path.translate ( dx, dy );
@@ -398,7 +422,7 @@ public class Graph implements Cloneable
      * @param y1 - line start y coordinate
      * @param x2 - line end x coordinate
      * @param y2 - line end y coordinate.
-     * 
+     *
      * @return node (first in the node list if line intersects several nodes)
      *         intersected by the line or null if there is no intersections.
      */
@@ -479,7 +503,7 @@ public class Graph implements Cloneable
     //
 
     /**
-     * Splits the graph to the set of unconnected subgraphs if possible. 
+     * Splits the graph to the set of unconnected subgraphs if possible.
      * If graph is connected the method returns initial graph clone.
      *
      * @return list of unconnected subgraphs. If graph is connected the list
@@ -790,7 +814,7 @@ public class Graph implements Cloneable
      * Assigns attribute to the corresponding graph node.
      *
      * @param tokens - graph node textual description.
-     * 
+     *
      * @return true if attribute was parsed successfully and false otherwise.
      */
     boolean parseAttribute(StringTokenizer tokens)
@@ -826,7 +850,7 @@ public class Graph implements Cloneable
      *
      * @param tokens - graph edge textual description
      * @param graph - graph which contains edge nodes
-     * 
+     *
      * @return - graph edge instance.
      *
      */
@@ -868,7 +892,7 @@ public class Graph implements Cloneable
      *
      * @param text - graph edge textual description
      * @param graph - graph which contains edge nodes
-     * 
+     *
      * @return - graph edge instance.
      */
     public static Edge parseEdge(String text, Graph graph)

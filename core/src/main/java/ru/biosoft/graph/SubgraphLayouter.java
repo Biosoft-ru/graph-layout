@@ -3,6 +3,8 @@ package ru.biosoft.graph;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -13,7 +15,7 @@ public class SubgraphLayouter
     protected static final Logger log = Logger.getLogger(SubgraphLayouter.class.getName());
 
     /** Horisontal distance between subgraphs. */
-    public int layerDeltaX = 350;
+    public int layerDeltaX = 50;
     public int getLayerDeltaX()
     {
         return layerDeltaX;
@@ -24,7 +26,7 @@ public class SubgraphLayouter
     }
 
     /** Vertical distance between subgraphs. */
-    public int layerDeltaY = 350;
+    public int layerDeltaY = 50;
     public int getLayerDeltaY()
     {
         return layerDeltaY;
@@ -137,6 +139,7 @@ public class SubgraphLayouter
     public void doLayout(AbstractLayouter graphLayouter, Graph initialGraph, LayoutJobControl lJC)
     {
         List<Graph> graphs = initialGraph.split();
+        sortByFixedNodes( graphs );
         if (lJC != null) lJC.begin();
 
         // TODO: Sort layers by node count
@@ -159,7 +162,7 @@ public class SubgraphLayouter
             Rectangle bounds = graph.getBounds();
             Point pos = rectangleStack.addRectangle(new Dimension(bounds.width+layerDeltaX, bounds.height+layerDeltaY));
 
-            graph.setLocation(pos.x, pos.y + layerDeltaY);
+            graph.setLocationForced( pos.x, pos.y );
 /*            graph.setLocation(rect.x + rect.width, rect.y);
 
             rect = (Rectangle)rect.createUnion(graph.getBounds());
@@ -182,7 +185,7 @@ public class SubgraphLayouter
             Rectangle bounds = graph.getBounds();
             Point pos = rectangleStack.addRectangle(new Dimension(bounds.width+layerDeltaX, bounds.height+layerDeltaY));
 
-            graph.setLocation(pos.x, pos.y + layerDeltaY);
+            graph.setLocationForced( pos.x, pos.y );
 
             if( graphLayouter != null )
                 graphLayouter.layoutEdges(graph, lJC);
@@ -206,7 +209,30 @@ public class SubgraphLayouter
         if( edgeCount != initialGraph.edgeCount() )
         	log.log(Level.SEVERE, "Error in graph split, icorrect edge count: " + edgeCount + " but should be " + initialGraph.edgeCount());
     }
-    
+
+    private void sortByFixedNodes(List<Graph> graphs)
+    {
+        Collections.sort( graphs, new Comparator<Graph>()
+        {
+            @Override
+            public int compare(Graph lhs, Graph rhs)
+            {
+                Rectangle r1 = Util.getFixedBounds( lhs );
+                Rectangle r2 = Util.getFixedBounds( rhs );
+                if( r1 == null && r2 == null )
+                    return 0;
+                else if( r1 == null && r2 != null )
+                    return 1;
+                else if( r1 != null && r2 == null )
+                    return -1;
+                
+                if( r1.x == r2.x && r1.y == r2.y )
+                    return 0;
+                return r1.y < r2.y ? -1 : r1.y > r2.y ? 1 : r1.x < r2.x ? -1 : 1;
+            }
+        } );
+
+    }
     protected void savePath(Graph initialGraph, Graph processedGraph)
     {
         Iterator<Edge> iterLevel = processedGraph.edgeIterator();

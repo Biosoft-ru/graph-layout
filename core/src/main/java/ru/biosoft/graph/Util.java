@@ -174,6 +174,41 @@ public class Util
         return result.toString();
     }
 
+    /**
+     * Get graph bounds based on fixed nodes and edges and ignore unfixed ones
+     */
+    public static Rectangle getFixedBounds(Graph g)
+    {
+        Rectangle rect = null;
+        for( Node node : g.nodeList )
+        {
+            if( !node.fixed )
+                continue;
+
+            Rectangle r = node.getBounds();
+            if( rect == null )
+                rect = r;
+            else
+                rect = rect.union( r );
+        }
+
+        for( Edge edge : g.edgeList )
+        {
+            if( !edge.fixed )
+                continue;
+            Path path = edge.path;
+            if( path != null )
+            {
+                Rectangle r = path.getBounds();
+                if( rect == null )
+                    rect = r;
+                else
+                    rect = rect.union( r );
+            }
+        }
+        return rect;
+    }
+
     public static void adjustOrientations(Graph graph)
     {
         for( Node node : graph.nodeList )
