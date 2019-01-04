@@ -1,14 +1,10 @@
 package ru.biosoft.graph;
 
 import junit.framework.TestCase;
-import ru.biosoft.graph.Edge;
-import ru.biosoft.graph.Graph;
-import ru.biosoft.graph.Node;
 
 import java.util.StringTokenizer;
 
-public class TestReadGraph
-        extends TestCase
+public class ReadGraphTest extends TestCase
 {
     public void testReadGraph ( )
             throws Exception
