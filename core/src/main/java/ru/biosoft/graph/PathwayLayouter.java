@@ -375,19 +375,22 @@ public class PathwayLayouter extends AbstractLayouter
 
     private void postProcess(Graph graph, boolean processEdges)
     {
-        int levelCount = getLevelCount();
-        for( int i = levelCount - 1; i >= 0; i-- )
+        if( !layouter.getInfo().supportCompartments() )
         {
-            Set<Node> compartments = levelToNodesMap.get(i);
-            if( compartments != null )
+            int levelCount = getLevelCount();
+            for( int i = levelCount - 1; i >= 0; i-- )
             {
-                for( Node compartment : compartments )
+                Set<Node> compartments = levelToNodesMap.get( i );
+                if( compartments != null )
                 {
-                    if( Util.isCompartment(compartment) )
+                    for( Node compartment : compartments )
                     {
-                        Set<Node> nodes = compartmentToNodes.get(compartment.name);
-                        if( nodes != null )
-                            compartment.setBounds(Util.getBounds(nodes));
+                        if( Util.isCompartment( compartment ) )
+                        {
+                            Set<Node> nodes = compartmentToNodes.get( compartment.name );
+                            if( nodes != null )
+                                compartment.setBounds( Util.getBounds( nodes ) );
+                        }
                     }
                 }
             }
