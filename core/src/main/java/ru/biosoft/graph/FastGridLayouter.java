@@ -29,6 +29,7 @@ public class FastGridLayouter extends AbstractLayouter
     private boolean isStartingFromThisLayout = false;
     private boolean isEstimationDone = false;
     private boolean isScaled = false;
+    private boolean isKeepCompartmentSize = false;
 
     //Grid parameters
     private int h; // Height of the grid
@@ -1156,7 +1157,7 @@ public class FastGridLayouter extends AbstractLayouter
         int levelsCount = levelToCompartmentMap.size();
 
         //setting compartments size
-        if( !isStartingFromThisLayout )
+        if( !isStartingFromThisLayout && !isKeepCompartmentSize )
         {
             for( int k = levelsCount - 1; k >= 0; k-- )
             {
@@ -1315,6 +1316,8 @@ public class FastGridLayouter extends AbstractLayouter
         int maximumHeight = 0;
         int width = 0;
         int height = 0;
+        int maxX = 0;
+        int maxY = 0;
         for( Node n : graph.nodeList )
         {
             if( Util.getCompartment(n, graph) == null )
@@ -1341,10 +1344,17 @@ public class FastGridLayouter extends AbstractLayouter
                 {
                     height += addHeight;
                 }
+                maxX = Math.max( maxX, (int)Math.ceil( ( n.x + n.width ) / (double)gridX ) );
+                maxY = Math.max( maxY, (int)Math.ceil( ( n.y + n.height ) / (double)gridY ) );
             }
         }
         w = maximumWidth + 2 * (int)Math.round(Math.sqrt(width));
         h = maximumHeight + 3 * (int)Math.round(Math.sqrt(height));
+        if( isStartingFromThisLayout() )
+        {
+            w = Math.max( w, maxX );
+            h = Math.max( h, maxY );
+        }
     }
 
     private void setCompartmentSize(Node compartment, Graph graph)
@@ -1422,7 +1432,7 @@ public class FastGridLayouter extends AbstractLayouter
     @Override
     public LayouterInfo getInfo()
     {
-        LayouterInfoSupport lis = new LayouterInfoSupport(true, true, false, false, false, true);
+        LayouterInfoSupport lis = new LayouterInfoSupport( true, true, false, true, false, true );
         return lis;
     }
 
@@ -1498,6 +1508,14 @@ public class FastGridLayouter extends AbstractLayouter
     public void setStartingFromThisLayout(boolean val)
     {
         isStartingFromThisLayout = val;
+    }
+    public boolean isKeepCompartmentSize()
+    {
+        return isKeepCompartmentSize;
+    }
+    public void setKeepCompartmentSize(boolean val)
+    {
+        isKeepCompartmentSize = val;
     }
     public Layouter getPathLayouter()
     {
