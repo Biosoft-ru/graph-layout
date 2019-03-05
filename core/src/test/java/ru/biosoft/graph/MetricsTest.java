@@ -1,22 +1,23 @@
 package ru.biosoft.graph;
 
 import junit.framework.TestCase;
-import ru.biosoft.graph.ForceDirectedLayouter;
-import ru.biosoft.graph.Graph;
-import ru.biosoft.graph.GreedyLayouter;
-import ru.biosoft.graph.HierarchicLayouter;
-import ru.biosoft.graph.LayoutQualityMetrics;
-import ru.biosoft.graph.Layouter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class TestMetrics extends TestCase
+public class MetricsTest extends TestCase
 {
 	private static final String[] files = new String[] {"db", "darren", "force_directed", "pubs_trivial", "northwind_trivial",
             "small_complex", "sample_dsd", "simple", "hierarchic", "moderate", "moderate2" /*, "complex" */ };
+
+    @Override
+    public void setUp() throws Exception
+    {
+        super.setUp();
+        TestingUtils.createTestOutDir();
+    }
 
     public void testForceDirectedLayout() throws Exception
     {
