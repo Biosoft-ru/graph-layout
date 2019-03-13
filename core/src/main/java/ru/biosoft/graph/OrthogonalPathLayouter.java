@@ -613,7 +613,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
 
         if( edge.getPath() == null )
         {
-            log.log(Level.INFO, "can not find path for edge: " + edge.toString());
+            log.log( Level.FINE, "can not find path for edge: " + edge.toString() );
             stubPathLayouter.layoutPath(graph, edge, pathWeighter);
         }
 
