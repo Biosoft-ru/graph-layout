@@ -33,6 +33,21 @@ public abstract class AbstractLayouter implements Layouter
         sl = subgraphLayouter;
     }
 
+    protected PathLayouterWrapper pathLayouterWrapper = null;
+    protected Layouter getPathLayouter()
+    {
+        return pathLayouterWrapper.getPathLayouter();
+    }
+
+    public PathLayouterWrapper getPathLayouterWrapper()
+    {
+        return pathLayouterWrapper;
+    }
+    public void setPathLayouterWrapper(PathLayouterWrapper pathLayouterWrapper)
+    {
+        this.pathLayouterWrapper = pathLayouterWrapper;
+    }
+
     ///////////////////////////////////////////////////////////////////
     @Override
     public void doLayout(Graph graph, LayoutJobControl lJC)

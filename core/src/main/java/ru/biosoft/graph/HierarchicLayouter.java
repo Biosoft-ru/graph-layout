@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ru.biosoft.graph.OrthogonalPathLayouter.Orientation;
 import ru.biosoft.jobcontrol.JobControl;
 
 public class HierarchicLayouter extends AbstractLayouter
@@ -26,7 +25,9 @@ public class HierarchicLayouter extends AbstractLayouter
     protected static final Logger log = Logger.getLogger(HierarchicLayouter.class.getName());
 
     public HierarchicLayouter()
-    {}
+    {
+        pathLayouterWrapper = new PathLayouterWrapper( new HierarchicPathLayouter() );
+    }
 
     @Override
 	protected void layoutNodes(Graph graph, LayoutJobControl lJC)
@@ -62,9 +63,9 @@ public class HierarchicLayouter extends AbstractLayouter
 
     /**
      * Returns Omega-value for Edge which is used during edge weight calculation.
-     * 
+     *
      * Edges between dummy nodes has higher Omega-value, thus they should be more straight.
-     * 
+     *
      * @param e input edge
      * @return omega value
      */
@@ -595,7 +596,7 @@ public class HierarchicLayouter extends AbstractLayouter
 
     /**
      * Returns median intralevel coordinate for given list of nodes.
-     * 
+     *
      * Warning: this method changes original list of nodes (namely sorts them), so be careful!
      */
     private int getMedianIntralevelCoord(Node[] adjacent)
@@ -831,14 +832,14 @@ public class HierarchicLayouter extends AbstractLayouter
                     }
                 }
             }
-            
-            Util.outGraph("C:/graphs/g1.txt", graph);
+
+            //Util.outGraph("C:/graphs/g1.txt", graph);
 
             // third iteration - remove dummies and processing parallel edges
             removeDummies( graph );
 
-            Util.outGraph("C:/graphs/g2.txt", graph);
-            
+            //Util.outGraph("C:/graphs/g2.txt", graph);
+
             // processing parallel edges only for neighboring levels
             for( Edge edge : graph.edgeList )
             {
@@ -858,8 +859,8 @@ public class HierarchicLayouter extends AbstractLayouter
                 }
             }
 
-            Util.outGraph("C:/graphs/g3.txt", graph);
-            
+            //Util.outGraph("C:/graphs/g3.txt", graph);
+
             // restore reversed edges
             for( int i = 0; i < graph.edgeList.size(); i++ )
             {
@@ -869,8 +870,8 @@ public class HierarchicLayouter extends AbstractLayouter
                     edge.reverseDirection();
                 }
             }
-            
-            Util.outGraph("C:/graphs/g4.txt", graph);
+
+            //Util.outGraph("C:/graphs/g4.txt", graph);
 
             if( selfLoopLayouter == null )
                 selfLoopLayouter = new SelfLoopLayouter();
@@ -882,9 +883,9 @@ public class HierarchicLayouter extends AbstractLayouter
                 graph.addEdge( edge );
             }
 
-            Util.outGraph("C:/graphs/g5.txt", graph);
-            
-            if( ( pathLayouter instanceof HierarchicPathLayouter ) )
+            //Util.outGraph("C:/graphs/g5.txt", graph);
+
+            if( ( getPathLayouter() instanceof HierarchicPathLayouter ) )
             {
                 // add to path control points to Bezier splines
                 for( Edge edge : graph.edgeList )
@@ -892,13 +893,13 @@ public class HierarchicLayouter extends AbstractLayouter
                     computingControlPoints( edge );
                 }
             }
-            else if( ( pathLayouter instanceof OrthogonalPathLayouter ) )
+            else if( ( getPathLayouter() instanceof OrthogonalPathLayouter ) )
             {
                 // TODO: all paths will be clear, so can be optimize
-                pathLayouter.layoutEdges( graph, jobControl );
+                getPathLayouter().layoutEdges( graph, jobControl );
             }
-            
-            Util.outGraph("C:/graphs/g2.txt", graph);
+
+            //Util.outGraph("C:/graphs/g2.txt", graph);
         }
     }
 
@@ -1903,7 +1904,7 @@ public class HierarchicLayouter extends AbstractLayouter
                 bezierPath.ypoints[bezierPath.npoints - 1] -= distArrow;
                 bezierPath.addPoint( path.xpoints[path.npoints - 1], path.ypoints[path.npoints - 1] - distArrow, Path.LINE_TYPE );
             }
-            
+
             adjustArrowTipConnection(bezierPath);
         }
         else
@@ -2012,15 +2013,15 @@ public class HierarchicLayouter extends AbstractLayouter
             }
         }
     }
-    
-    
+
+
     /**
      * Spike solution:
      * shifts path in order to free space for arrow tip aligned vertically<br>
      * So edge would connect to arrow tip from the top:
-     *        __        
-     *         _|_                 ___ 
-     *         \ /   instead of  __\ /  
+     *        __
+     *         _|_                 ___
+     *         \ /   instead of  __\ /
      *          V                   V
      *TODO: rework computingControlPoints method to account this situation
      *@see also bug #6877
@@ -2028,26 +2029,26 @@ public class HierarchicLayouter extends AbstractLayouter
     public void adjustArrowTipConnection(Path path)
     {
         int shift = 10;
-        
+
         boolean right = path.xpoints[path.npoints - 1] > path.xpoints[0];
         double middlePoint = (path.xpoints[path.npoints - 1] + path.xpoints[0]) / 2;
-                
+
         for (int i=0; i<path.npoints; i++)
         {
             if (path.xpoints[i] > middlePoint == right)
                 path.ypoints[i] -= shift;
         }
     }
-    
+
 
     public SelfLoopLayouter selfLoopLayouter = new SelfLoopLayouter();
 
     @Override
 	public void layoutPath(Graph graph, Edge edge, LayoutJobControl jobControl)
     {
-        if( ! ( pathLayouter instanceof HierarchicPathLayouter ) )
+        if( ! ( getPathLayouter() instanceof HierarchicPathLayouter ) )
         {
-            pathLayouter.layoutPath( graph, edge, jobControl );
+            getPathLayouter().layoutPath( graph, edge, jobControl );
             return;
         }
 
@@ -3174,26 +3175,5 @@ public class HierarchicLayouter extends AbstractLayouter
         public int upEdgesWeight = 0;
 
         public int downEdgesWeight = 0;
-    }
-
-    private Layouter pathLayouter = new HierarchicPathLayouter();
-    public Layouter getPathLayouter()
-    {
-        return pathLayouter;
-    }
-    public void setPathLayouter(Layouter val)
-    {
-        if( val instanceof OrthogonalPathLayouter )
-        {
-            if( verticalOrientation )
-            {
-                ( (OrthogonalPathLayouter)val ).setOrientation( Orientation.BOTTOM_NAME );
-            }
-            else
-            {
-                ( (OrthogonalPathLayouter)val ).setOrientation( Orientation.RIGHT_NAME );
-            }
-        }
-        pathLayouter = val;
     }
 }

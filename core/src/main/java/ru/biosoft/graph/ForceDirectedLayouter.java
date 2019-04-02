@@ -52,12 +52,14 @@ public class ForceDirectedLayouter extends AbstractLayouter
     public ForceDirectedLayouter()
     {
         super();
+        pathLayouterWrapper = new PathLayouterWrapper( new DiagonalPathLayouter() );
     }
 
     public ForceDirectedLayouter(int edgeLength)
     {
         super();
         this.edgeLength = edgeLength;
+        pathLayouterWrapper = new PathLayouterWrapper( new DiagonalPathLayouter() );
     }
 
 
@@ -121,23 +123,10 @@ public class ForceDirectedLayouter extends AbstractLayouter
         		layoutPath(graph, edge, lJC);
     }
 
-    private Layouter dpl = new DiagonalPathLayouter();
-    public Layouter getPathLayouter()
-    {
-        return dpl;
-    }
-    public void setPathLayouter(Layouter val)
-    {
-        dpl = val;
-    }
-
     @Override
 	public void layoutPath(Graph graph, Edge edge, LayoutJobControl lJC)
     {
-        // TODO: clean after serialization fix
-        if( dpl == null )
-            dpl = new DiagonalPathLayouter();
-        dpl.layoutPath(graph, edge, lJC);
+        getPathLayouter().layoutPath( graph, edge, lJC );
     }
 
     // //////////////////////////////////////////////////////////////////////////

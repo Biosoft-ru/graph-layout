@@ -77,15 +77,9 @@ public class CompartmentCrossCostGridLayouter extends AbstractLayouter
 
     protected ForceDirectedLayouter forceDirectedLayouter = new ForceDirectedLayouter();
 
-    protected Layouter pathLayouter = new DiagonalPathLayouter();
-
-    public Layouter getPathLayouter()
+    public CompartmentCrossCostGridLayouter()
     {
-        return pathLayouter;
-    }
-    public void setPathLayouter(Layouter val)
-    {
-        pathLayouter = val;
+        pathLayouterWrapper = new PathLayouterWrapper( new DiagonalPathLayouter() );
     }
 
     protected double makeTmax(Graph graph) //max temperature identification
@@ -1766,7 +1760,7 @@ public class CompartmentCrossCostGridLayouter extends AbstractLayouter
     @Override
     public void layoutPath(Graph graph, Edge edge, LayoutJobControl lJC)
     {
-        pathLayouter.layoutPath(graph, edge, lJC);
+        getPathLayouter().layoutPath( graph, edge, lJC );
     }
 
     protected void doCompLayout(Graph graph, LayoutJobControl lJC)

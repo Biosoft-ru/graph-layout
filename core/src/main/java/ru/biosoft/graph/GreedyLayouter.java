@@ -57,8 +57,6 @@ public class GreedyLayouter extends AbstractLayouter
     protected int processedWeight = -1;
     protected int unprocessedWeight = 1;
 
-    protected Layouter pathLayouter = new OrthogonalPathLayouter();
-
     protected List<Node> processedNodes = new ArrayList<>();
     protected List<Node> unprocessedNodes = new ArrayList<>();
 
@@ -70,6 +68,7 @@ public class GreedyLayouter extends AbstractLayouter
 
     public GreedyLayouter()
     {
+        pathLayouterWrapper = new PathLayouterWrapper( new OrthogonalPathLayouter() );
     }
 
     public GreedyLayouter(int gridX, int gridY)
@@ -687,13 +686,13 @@ public class GreedyLayouter extends AbstractLayouter
     @Override
     public void layoutEdges(Graph graph, LayoutJobControl lJC)
     {
-        pathLayouter.layoutEdges(graph, lJC);
+        getPathLayouter().layoutEdges( graph, lJC );
     }
 
     @Override
     public void layoutPath(Graph graph, Edge edge, LayoutJobControl lJC)
     {
-        pathLayouter.layoutPath(graph, edge, lJC);
+        getPathLayouter().layoutPath( graph, edge, lJC );
     }
 
     //+++++++++++++++++++++++++++++++++++++
@@ -743,15 +742,5 @@ public class GreedyLayouter extends AbstractLayouter
     public void setLayerDeltaY(int deltaY)
     {
         layerDeltaY = deltaY;
-    }
-
-    public Layouter getPathLayouter()
-    {
-        return pathLayouter;
-    }
-
-    public void setPathLayouter(Layouter layouter)
-    {
-        pathLayouter = layouter;
     }
 }

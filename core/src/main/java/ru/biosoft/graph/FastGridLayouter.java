@@ -15,9 +15,6 @@ import ru.biosoft.jobcontrol.JobControl;
 
 public class FastGridLayouter extends AbstractLayouter
 {
-    //Path layouter parameters
-    private Layouter pathLayouter = new OrthogonalPathLayouter();
-
     //Annealing parameters
     private int threadCount = 2;
     private int tMax;
@@ -60,6 +57,7 @@ public class FastGridLayouter extends AbstractLayouter
     public FastGridLayouter()
     {
         super();
+        pathLayouterWrapper = new PathLayouterWrapper( new OrthogonalPathLayouter() );
     }
 
     @Override
@@ -94,13 +92,13 @@ public class FastGridLayouter extends AbstractLayouter
 	public void layoutEdges(Graph graph, LayoutJobControl jobControl)
     {
 
-        pathLayouter.layoutEdges(graph, jobControl);
+        getPathLayouter().layoutEdges( graph, jobControl );
     }
 
     @Override
     public void layoutPath(Graph graph, Edge edge, LayoutJobControl jobControl)
     {
-        pathLayouter.layoutPath(graph, edge, jobControl);
+        getPathLayouter().layoutPath( graph, edge, jobControl );
     }
 
 
@@ -1432,7 +1430,7 @@ public class FastGridLayouter extends AbstractLayouter
     @Override
     public LayouterInfo getInfo()
     {
-        LayouterInfoSupport lis = new LayouterInfoSupport( true, true, false, true, false, true );
+        LayouterInfoSupport lis = new LayouterInfoSupport( true, true, true, true, false, true );
         return lis;
     }
 
@@ -1516,14 +1514,6 @@ public class FastGridLayouter extends AbstractLayouter
     public void setKeepCompartmentSize(boolean val)
     {
         isKeepCompartmentSize = val;
-    }
-    public Layouter getPathLayouter()
-    {
-        return pathLayouter;
-    }
-    public void setPathLayouter(Layouter val)
-    {
-        pathLayouter = val;
     }
     public int getEdgeEdgeCrossCost()
     {
