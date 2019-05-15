@@ -19,6 +19,10 @@ public class PathLayouterWrapper
         pathLayouterName = getLayouterNameByClass( layouter );
     }
 
+    public PathLayouterWrapper()
+    {
+    }
+
     public static String[] getTags()
     {
         return new String[] {ORTHOGONAL, DIAGONAL, HIERARCHIC};

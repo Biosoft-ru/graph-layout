@@ -75,6 +75,7 @@ public class GreedyLayouter extends AbstractLayouter
     {
         this.gridX = gridX;
         this.gridY = gridY;
+        pathLayouterWrapper = new PathLayouterWrapper( new OrthogonalPathLayouter() );
     }
 
     /**
