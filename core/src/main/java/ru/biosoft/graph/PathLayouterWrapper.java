@@ -1,5 +1,7 @@
 package ru.biosoft.graph;
 
+import java.util.Objects;
+
 /**
  * Wrapper for path layouter to provide possibility to select layouter by name
  */
@@ -35,15 +37,15 @@ public class PathLayouterWrapper
 
     public static Layouter getPathLayouterByName(String name)
     {
-        if( name.equals( ORTHOGONAL ) )
+        if( ORTHOGONAL.equals( name ) )
         {
             return new OrthogonalPathLayouter();
         }
-        else if( name.equals( DIAGONAL ) )
+        else if( DIAGONAL.equals( name ) )
         {
             return new DiagonalPathLayouter();
         }
-        else if( name.equals( HIERARCHIC ) )
+        else if( HIERARCHIC.equals( name ) )
         {
             return new HierarchicPathLayouter();
         }
@@ -77,7 +79,7 @@ public class PathLayouterWrapper
 
     public void setPathLayouterName(String pathLayouterName)
     {
-        if( !this.pathLayouterName.equals( pathLayouterName ) )
+        if( !Objects.equals( this.pathLayouterName, pathLayouterName ) )
         {
             this.pathLayouterName = pathLayouterName;
             setPathLayouterOptions( getPathLayouterByName( pathLayouterName ) );
