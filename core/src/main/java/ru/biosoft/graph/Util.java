@@ -33,6 +33,17 @@ public class Util
             }
         return result;
     }
+    
+    /**
+     * returns true if graph have any nodes which are fixed
+     */
+    public static boolean hasFixedNodes(Graph graph)
+    {
+        for( Node node : graph.nodeList )
+            if( node.fixed )
+                return true;
+        return false;
+    }
 
     /**
      * @return rectangle which surrounds all <b>nodes</b> and is even slightly larger (x+=20, y+=20)
@@ -208,6 +219,25 @@ public class Util
         }
         return rect;
     }
+    
+    public static Rectangle getBounds(Graph g, Node compartment, int offset)
+    {
+        Rectangle rect = null;
+        String compartmentName = compartment.getName();
+        for( Node node : g.nodeList )
+        {
+            if( compartmentName.equals( node.getAttribute( "compartmentName" ) ) )
+            {
+                Rectangle r = node.getBounds();
+                rect = ( rect == null ) ? r : rect.union( r );
+            }
+        }
+        rect.x -= offset;
+        rect.y -= offset;
+        rect.width += 2*offset;
+        rect.height += 2*offset;
+        return rect;
+    }
 
     public static void adjustOrientations(Graph graph)
     {
@@ -347,5 +377,16 @@ public class Util
         else
             return distY > 0 ? Orientation.BOTTOM : Orientation.TOP;
     }
-
+    
+    public static Set<Node> getCompartments(Edge edge, Graph graph)
+    {
+        Set<Node> exclusions = new HashSet<>();
+        Node comaprtmentFrom = Util.getCompartment( edge.getFrom(), graph );
+        Node compartmentTo = Util.getCompartment( edge.getTo(), graph );
+        if (comaprtmentFrom != null)
+            exclusions.add( comaprtmentFrom );
+        if (compartmentTo != null)
+            exclusions.add( compartmentTo );
+        return exclusions;
+    }
 }
