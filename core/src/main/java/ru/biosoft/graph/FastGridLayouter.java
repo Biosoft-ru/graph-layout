@@ -1259,6 +1259,8 @@ public class FastGridLayouter extends AbstractLayouter
             {
                 node.width = originalNode.width;
                 node.height = originalNode.height;
+                node.x = originalNode.x;
+                node.y = originalNode.y;
             }
         }
     }
