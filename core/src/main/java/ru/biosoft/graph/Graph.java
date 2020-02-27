@@ -426,7 +426,7 @@ public class Graph implements Cloneable
      * @return node (first in the node list if line intersects several nodes)
      *         intersected by the line or null if there is no intersections.
      */
-    public Node getIntersectedNode(int x1, int y1, int x2, int y2)
+    public Node getIntersectedNode(int x1, int y1, int x2, int y2, Set<Node> exclusions)
     {
         if( x1 > x2 )
         {
@@ -445,7 +445,7 @@ public class Graph implements Cloneable
         Rectangle rect = new Rectangle( x1, y1, x2 - x1, y2 - y1 );
 
         for( Node node : nodeList )
-            if( rect.intersects( node.x, node.y, node.width, node.height ) )
+            if( !exclusions.contains(node) && rect.intersects( node.x, node.y, node.width, node.height ) )
                 return node;
 
         return null;

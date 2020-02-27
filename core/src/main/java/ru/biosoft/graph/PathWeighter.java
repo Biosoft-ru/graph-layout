@@ -1,6 +1,7 @@
 package ru.biosoft.graph;
 
 import java.awt.*;
+import java.util.Set;
 
 /**
  * Utilility methods to calculate path weight. Path with minimal weight is the best.
@@ -108,12 +109,12 @@ public class PathWeighter
      * 
      * @return weight for the specified line path.
      */
-    public int calcLineWeight(Graph graph, int x1, int y1, int x2, int y2, int maxWeight)
+    public int calcLineWeight(Graph graph, int x1, int y1, int x2, int y2, int maxWeight, Set<Node> exclusions)
     {
         int penalty = 0;
 
         // penalise node crossings
-        if( graph.getIntersectedNode(x1 - 1, y1 - 1, x2 + 1, y2 + 1) != null )
+        if( graph.getIntersectedNode(x1 - 1, y1 - 1, x2 + 1, y2 + 1, exclusions) != null )
             penalty += nodeIntersectionPenalty;
 
         if( penalty > maxWeight )

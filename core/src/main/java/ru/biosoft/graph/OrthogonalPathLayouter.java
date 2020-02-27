@@ -2,8 +2,10 @@ package ru.biosoft.graph;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -438,6 +440,14 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         Node from = edge.getFrom();
         Node to = edge.getTo();
 
+        Set<Node> exclusions = new HashSet<>();
+        Node comaprtmentFrom = Util.getCompartment( from, graph );
+        Node compartmentTo = Util.getCompartment( to, graph );
+        if (comaprtmentFrom != null)
+            exclusions.add( comaprtmentFrom );
+        if (compartmentTo != null)
+            exclusions.add( compartmentTo );
+        
         int y1 = Math.max(from.y, to.y);
         int y2 = Math.min(from.y + from.height, to.y + to.height);
         int dy = y2 - y1;
@@ -469,7 +479,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
                 && !createPath(edge, newFrom2.x, newFrom2.y, newTo2.x, newTo2.y, false) )
             return false;
 
-        Node node = graph.getIntersectedNode(x1, y - gridY, x2, y + gridY);
+        Node node = graph.getIntersectedNode(x1, y - gridY, x2, y + gridY, exclusions);
         if( node == null )
             return true; // path already created
 
@@ -482,7 +492,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         if( k == 1 )
         {
             yk = y + gridY;
-            if( graph.getIntersectedNode(x1, yk - gridY, x2, yk + gridY) == null )
+            if( graph.getIntersectedNode(x1, yk - gridY, x2, yk + gridY, exclusions) == null )
                 if( createPath(edge, x1, yk, x2, yk, false) )
                     return true;
         }
@@ -491,12 +501,12 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         for( int i = 1; i < k; i++ )
         {
             yk = y + i * gridY;
-            if( graph.getIntersectedNode(x1, yk - gridY, x2, yk + gridY) == null )
+            if( graph.getIntersectedNode(x1, yk - gridY, x2, yk + gridY, exclusions) == null )
                 if( createPath(edge, x1, yk, x2, yk, false) )
                     return true;
 
             yk = y - i * gridY;
-            if( graph.getIntersectedNode(x1, yk - gridY, x2, yk + gridY) == null )
+            if( graph.getIntersectedNode(x1, yk - gridY, x2, yk + gridY, exclusions) == null )
                 if( createPath(edge, x1, yk, x2, yk, false) )
                     return true;
         }
@@ -511,6 +521,8 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         Node from = edge.getFrom();
         Node to = edge.getTo();
 
+        Set<Node> exclusions = Util.getCompartments( edge, graph );
+        
         int x1 = Math.max(from.x, to.x);
         int x2 = Math.min(from.x + from.width, to.x + to.width);
         int dx = x2 - x1;
@@ -542,7 +554,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
                 && !createPath(edge, newFrom2.x, newFrom2.y, newTo2.x, newTo2.y, true) )
             return false;
 
-        Node node = graph.getIntersectedNode(x - gridX, y1, x + gridX, y2);
+        Node node = graph.getIntersectedNode(x - gridX, y1, x + gridX, y2, exclusions);
         if( node == null )
             return true; // path already created
 
@@ -555,7 +567,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         if( k == 1 )
         {
             xk = x + gridX;
-            if( graph.getIntersectedNode(y1, xk - gridX, x2, xk + gridX) == null )
+            if( graph.getIntersectedNode(y1, xk - gridX, x2, xk + gridX, exclusions) == null )
                 if( createPath(edge, y1, xk, y2, xk, false) )
                     return true;
         }
@@ -564,12 +576,12 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         for( int i = 1; i < k; i++ )
         {
             xk = x + i * gridX;
-            if( graph.getIntersectedNode(xk - gridX, y1, xk + gridX, y2) == null )
+            if( graph.getIntersectedNode(xk - gridX, y1, xk + gridX, y2, exclusions) == null )
                 if( createPath(edge, xk, y1, xk, y2, true) )
                     return true;
 
             xk = x - i * gridX;
-            if( graph.getIntersectedNode(xk - gridX, y1, xk + gridX, y2) == null )
+            if( graph.getIntersectedNode(xk - gridX, y1, xk + gridX, y2, exclusions) == null )
                 if( createPath(edge, xk, y1, xk, y2, true) )
                     return true;
         }
@@ -626,7 +638,8 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         int i;
         Node from = edge.getFrom();
         Node to = edge.getTo();
-
+        Set<Node> exc = Util.getCompartments( edge, graph );
+        
         // generate a set of possible paths
         Face fromFace = new Face(graph, from, edge, gridX, gridY, oneEdgeToPoint, orientation);
         Face toFace = new Face(graph, to, edge, gridX, gridY, oneEdgeToPoint, orientation);
@@ -645,7 +658,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
                 int toX = pTo.x;
                 int toY = pTo.y;
 
-                finders[i * toCount + j] = new OrthogonalPathFinder(graph, pFrom.x, pFrom.y, toX, toY, gridX, gridY);
+                finders[i * toCount + j] = new OrthogonalPathFinder(graph, exc, pFrom.x, pFrom.y, toX, toY, gridX, gridY);
             }
         }
 
@@ -853,17 +866,20 @@ public class OrthogonalPathLayouter extends AbstractLayouter
             Path p1 = e1.getPath();
             Path p2 = e2.getPath();
 
+            Set<Node> exc1 = Util.getCompartments( e1, graph );
+            Set<Node> exc2 = Util.getCompartments( e2, graph );
+            
             boolean vertical = ( p1.xpoints[s1] == p1.xpoints[s1 + 1] );
             int delta = vertical ? gridX : gridY;
             boolean first = true;
             int position = 0;
-            int bestWeight = calcSegmentWeight(graph, vertical, Integer.MAX_VALUE, p1, s1, 0, p2, s2, 0, pathWeighter);
+            int bestWeight = calcSegmentWeight(graph, vertical, Integer.MAX_VALUE, p1, s1, 0, p2, s2, 0, pathWeighter, exc1, exc2);
             int weight;
 
             for( Shift shift : shifts )
             {
                 weight = calcSegmentWeight(graph, vertical, bestWeight, p1, s1, delta * shift.first, p2, s2, delta * shift.second,
-                        pathWeighter);
+                        pathWeighter, exc1, exc2);
 
                 if( weight < bestWeight )
                 {
@@ -1002,14 +1018,17 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         input2 = e2.getFrom().findPort(input2.x, input2.y, e2);
         output2 = e2.getTo().findPort(output2.x, output2.y, e2);
         
-        OrthogonalPathFinder finderE1 = new OrthogonalPathFinder(graph, input1.x, input1.y, output1.x, output1.y, gridX, gridY);
+        Set<Node> exc1 = Util.getCompartments( e1, graph );
+        OrthogonalPathFinder finderE1 = new OrthogonalPathFinder(graph, exc1, input1.x, input1.y, output1.x, output1.y, gridX, gridY);
         for( int i = 0; i < iterationMax; i++ )
         {
             finderE1.nextStep();
             if( finderE1.hasSolution() )
                 break;
         }
-        OrthogonalPathFinder finderE2 = new OrthogonalPathFinder(graph, input2.x, input2.y, output2.x, output2.y, gridX, gridY);
+        
+        Set<Node> exc2 = Util.getCompartments( e2, graph );
+        OrthogonalPathFinder finderE2 = new OrthogonalPathFinder(graph, exc2, input2.x, input2.y, output2.x, output2.y, gridX, gridY);
         for( int i = 0; i < iterationMax; i++ )
         {
             finderE2.nextStep();
@@ -1044,7 +1063,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
     }
 
     private int calcSegmentWeight(Graph graph, boolean vertical, int maxWeight, Path p1, int s1, int shift1, Path p2, int s2, int shift2,
-            PathWeighter pathWeighter)
+            PathWeighter pathWeighter, Set<Node> exc1, Set<Node> exc2)
     {
         int weight = 0;
 
@@ -1054,11 +1073,11 @@ public class OrthogonalPathLayouter extends AbstractLayouter
 
         weight += pathWeighter.calcLineWeight(graph, p1.xpoints[s1] + ( vertical ? shift1 : 0 ),
                 p1.ypoints[s1] + ( vertical ? 0 : shift1 ), p1.xpoints[s1 + 1] + ( vertical ? shift1 : 0 ), p1.ypoints[s1 + 1]
-                        + ( vertical ? 0 : shift1 ), maxWeight);
+                        + ( vertical ? 0 : shift1 ), maxWeight, exc1);
 
         weight += pathWeighter.calcLineWeight(graph, p2.xpoints[s2] + ( vertical ? shift2 : 0 ),
                 p2.ypoints[s2] + ( vertical ? 0 : shift2 ), p2.xpoints[s2 + 1] + ( vertical ? shift2 : 0 ), p2.ypoints[s2 + 1]
-                        + ( vertical ? 0 : shift2 ), maxWeight);
+                        + ( vertical ? 0 : shift2 ), maxWeight, exc2);
 
         return weight;
     }
@@ -1212,6 +1231,8 @@ public class OrthogonalPathLayouter extends AbstractLayouter
         while( iter.hasNext() )
         {
             Edge edge = iter.next();
+            if (edge.fixed)
+                continue;
             Path oldPath = edge.getPath();
             if( oldPath != null && oldPath.npoints > 2 )
             {

@@ -2,6 +2,7 @@ package ru.biosoft.graph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <code>OrthogonalPathFinder</code> tries to find orthogonal path(s) that connects
@@ -45,6 +46,7 @@ import java.util.List;
 public class OrthogonalPathFinder
 {
     private final Graph graph;
+    private final Set<Node> exclusions;
     private final int x1, y1, x2, y2;
     private final int gridX, gridY;
 
@@ -61,11 +63,11 @@ public class OrthogonalPathFinder
      * @param gridX - x grid step
      * @param gridY - y grid step.
      */
-    public OrthogonalPathFinder(Graph graph, int x1, int y1, int x2, int y2,
+    public OrthogonalPathFinder(Graph graph, Set<Node> exclusions, int x1, int y1, int x2, int y2,
                                 int gridX, int gridY)
     {
         this.graph = graph;
-
+        this.exclusions = exclusions;
         this.x1 = x1;
         this.y1 = y1;
         this.x2 = x2;
@@ -184,18 +186,18 @@ public class OrthogonalPathFinder
         // check whether it is vertical or horizontal line
         if( x1 != x2 && y1 != y2 ) // diagonal
         {
-            pf1 = new OrthogonalPathFinder(graph, x1, y1, x1, y2, gridX, gridY);
-            pf2 = new OrthogonalPathFinder(graph, x1, y2, x2, y2, gridX, gridY);
+            pf1 = new OrthogonalPathFinder(graph, exclusions, x1, y1, x1, y2, gridX, gridY);
+            pf2 = new OrthogonalPathFinder(graph, exclusions, x1, y2, x2, y2, gridX, gridY);
 
-            pf3 = new OrthogonalPathFinder(graph, x1, y1, x2, y1, gridX, gridY);
-            pf4 = new OrthogonalPathFinder(graph, x2, y1, x2, y2, gridX, gridY);
+            pf3 = new OrthogonalPathFinder(graph, exclusions, x1, y1, x2, y1, gridX, gridY);
+            pf4 = new OrthogonalPathFinder(graph, exclusions, x2, y1, x2, y2, gridX, gridY);
 
             return;
         }
 
         if(x1 == x2 ) // vertical line
         {
-            Node node = graph.getIntersectedNode(x1-gridX, y1, x1+gridX, y2);
+            Node node = graph.getIntersectedNode(x1-gridX, y1, x1+gridX, y2, exclusions);
             if( node == null )
             {
                 makeSimplePath();
@@ -208,17 +210,17 @@ public class OrthogonalPathFinder
                 int xl = (node.x) /gridX*gridX - 2*gridX;
                 int xr = (node.x + node.width) /gridX*gridX + 2*gridX;
 
-                pf1 = new OrthogonalPathFinder(graph, x1, y1, xl, y, gridX, gridY);
-                pf2 = new OrthogonalPathFinder(graph, xl, y, x2, y2, gridX, gridY);
+                pf1 = new OrthogonalPathFinder(graph, exclusions, x1, y1, xl, y, gridX, gridY);
+                pf2 = new OrthogonalPathFinder(graph, exclusions, xl, y, x2, y2, gridX, gridY);
 
-                pf3 = new OrthogonalPathFinder(graph, x1, y1, xr, y, gridX, gridY);
-                pf4 = new OrthogonalPathFinder(graph, xr, y, x2, y2, gridX, gridY);
+                pf3 = new OrthogonalPathFinder(graph, exclusions, x1, y1, xr, y, gridX, gridY);
+                pf4 = new OrthogonalPathFinder(graph, exclusions, xr, y, x2, y2, gridX, gridY);
             }
         }
 
         else // horizontal line, y1==y2
         {
-            Node node = graph.getIntersectedNode(x1, y1-gridY, x2, y2+gridY);
+            Node node = graph.getIntersectedNode(x1, y1-gridY, x2, y2+gridY, exclusions);
             if( node == null )
             {
                 makeSimplePath();
@@ -231,11 +233,11 @@ public class OrthogonalPathFinder
                 int yt = (node.y) /gridY*gridY - 2*gridY;
                 int yb = (node.y + node.height) /gridY*gridY + 2*gridY;
 
-                pf1 = new OrthogonalPathFinder(graph, x1, y1, x, yt, gridX, gridY);
-                pf2 = new OrthogonalPathFinder(graph, x, yt, x2, y2, gridX, gridY);
+                pf1 = new OrthogonalPathFinder(graph, exclusions, x1, y1, x, yt, gridX, gridY);
+                pf2 = new OrthogonalPathFinder(graph, exclusions, x, yt, x2, y2, gridX, gridY);
 
-                pf3 = new OrthogonalPathFinder(graph, x1, y1, x, yb, gridX, gridY);
-                pf4 = new OrthogonalPathFinder(graph, x, yb, x2, y2, gridX, gridY);
+                pf3 = new OrthogonalPathFinder(graph, exclusions, x1, y1, x, yb, gridX, gridY);
+                pf4 = new OrthogonalPathFinder(graph, exclusions, x, yb, x2, y2, gridX, gridY);
             }
         }
     }
