@@ -232,6 +232,8 @@ public class Util
                 rect = ( rect == null ) ? r : rect.union( r );
             }
         }
+        if (rect == null)
+            return null;
         rect.x -= offset;
         rect.y -= offset;
         rect.width += 2*offset;

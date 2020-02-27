@@ -1149,12 +1149,15 @@ public class FastGridLayouter extends AbstractLayouter
                     if (isStartingFromThisLayout) //in the case when we try to use initial layout first 
                     {
                         Rectangle r = Util.getBounds( graph, compartment, 10 );
-                        int oldX = compartment.x;
-                        int oldY = compartment.y;
-                        compartment.x = Math.min( compartment.x, r.x );
-                        compartment.y = Math.min( compartment.y, r.y );
-                        compartment.width = Math.max( oldX + compartment.width , r.x + r.width ) - compartment.x;
-                        compartment.height = Math.max( oldY + compartment.height , r.y + r.height ) - compartment.y;
+                        if( r != null )
+                        {
+                            int oldX = compartment.x;
+                            int oldY = compartment.y;
+                            compartment.x = Math.min( compartment.x, r.x );
+                            compartment.y = Math.min( compartment.y, r.y );
+                            compartment.width = Math.max( oldX + compartment.width, r.x + r.width ) - compartment.x;
+                            compartment.height = Math.max( oldY + compartment.height, r.y + r.height ) - compartment.y;
+                        }
                     }
                 } 
             }
@@ -1202,7 +1205,7 @@ public class FastGridLayouter extends AbstractLayouter
         fixedNodes = new HashMap<>();
         for( Node node : graph.nodeList )
         {
-            if( node.fixed && !Util.isCompartment( node ))
+            if( node.fixed )
                 fixedNodes.put( node.name, node.clone() );
         }
     }
