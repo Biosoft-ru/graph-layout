@@ -397,32 +397,34 @@ public class PathwayLayouter extends AbstractLayouter
         }
 
         //shifting all nodes to the upper-left corner
-        int dx = Integer.MAX_VALUE;
-        int dy = Integer.MAX_VALUE;
-        for( Node node : graph.nodeList )
+        if( !Util.hasFixedNodes( graph ) )
         {
-            dx = Math.min(node.x, dx);
-            dy = Math.min(node.y, dy);
-        }
-        for( Node node : graph.nodeList )
-        {
-            node.x -= dx;
-            node.y -= dy;
-        }
-        if( processEdges )
-        {
-            for( Edge e : graph.edgeList )
+            int dx = Integer.MAX_VALUE;
+            int dy = Integer.MAX_VALUE;
+            for( Node node : graph.nodeList )
             {
-                Path p = e.getPath();
-                for( int i = 0; i < p.npoints; i++ )
+                dx = Math.min( node.x, dx );
+                dy = Math.min( node.y, dy );
+            }
+            for( Node node : graph.nodeList )
+            {
+                node.x -= dx;
+                node.y -= dy;
+            }
+            if( processEdges )
+            {
+                for( Edge e : graph.edgeList )
                 {
-                    p.xpoints[i] -= dx;
-                    p.ypoints[i] -= dy;
+                    Path p = e.getPath();
+                    for( int i = 0; i < p.npoints; i++ )
+                    {
+                        p.xpoints[i] -= dx;
+                        p.ypoints[i] -= dy;
+                    }
+                    e.path = p;
                 }
-                e.path = p;
             }
         }
-
     }
 
     private void initMaps(Graph graph)
