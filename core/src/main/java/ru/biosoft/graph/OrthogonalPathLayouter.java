@@ -1,6 +1,7 @@
 package ru.biosoft.graph;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -168,7 +169,7 @@ public class OrthogonalPathLayouter extends AbstractLayouter
     public static final String OLD_HEIGHT_ATTR = "oldHeight";
 
 
-    private boolean smoothEdges = true;
+    private boolean smoothEdges = false;
     public boolean isSmoothEdges()
     {
         return smoothEdges;
