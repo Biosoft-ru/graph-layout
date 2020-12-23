@@ -11,6 +11,8 @@ public abstract class AbstractLayouter implements Layouter
     // properties
     //
 
+    protected boolean adjustReactions = true; //by default
+    
     protected int operationsDone = 0;
 
     protected PathWeighter pathWeighter = new PathWeighter();
@@ -46,6 +48,15 @@ public abstract class AbstractLayouter implements Layouter
     public void setPathLayouterWrapper(PathLayouterWrapper pathLayouterWrapper)
     {
         this.pathLayouterWrapper = pathLayouterWrapper;
+    }
+    
+    public boolean isAdjustReactions()
+    {
+         return adjustReactions;
+    }
+    public void setAdjustReactions(boolean adjustReactions)
+    {
+        this.adjustReactions = adjustReactions;
     }
 
     ///////////////////////////////////////////////////////////////////

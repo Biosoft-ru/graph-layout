@@ -29,6 +29,8 @@ public class PathwayLayouter extends AbstractLayouter
     {
         super();
         this.layouter = layouter;
+        if( layouter instanceof AbstractLayouter )
+            this.adjustReactions = ( (AbstractLayouter)layouter ).isAdjustReactions();
     }
 
     public Graph prepareGraph(Graph graph)
@@ -61,7 +63,8 @@ public class PathwayLayouter extends AbstractLayouter
         {
             graphToLayout.addEdge(edge);
         }
-        adjustReactions(graphToLayout);
+        if( isAdjustReactions() )
+            adjustReactions( graphToLayout );
         initMaps(graphToLayout);
         return graphToLayout;
     }
