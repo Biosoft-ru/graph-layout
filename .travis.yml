@@ -2,6 +2,7 @@ language: java
 before_install:
   - git clone https://github.com/Biosoft-ru/jobcontrol.git
     && cd jobcontrol
+    && git checkout v2.0
     && mvn install -DskipTests=true -Dmaven.javadoc.skip=true
     && cd ../
 install:
